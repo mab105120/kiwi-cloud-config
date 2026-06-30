@@ -1,5 +1,5 @@
 import aws_cdk as cdk
-from stacks import VpcStack, DatabaseStack, CiCdStack
+from stacks import VpcStack, DatabaseStack
 
 app = cdk.App()
 
