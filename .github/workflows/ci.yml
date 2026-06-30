@@ -31,4 +31,8 @@ jobs:
         with:
           node-version: '20'
       - run: npm install -g aws-cdk
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-2
       - run: cdk synth -c env=dev
