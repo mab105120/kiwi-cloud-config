@@ -88,7 +88,7 @@ class DatabaseStack(Stack):
                 ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO
             ),
             engine=rds.DatabaseInstanceEngine.mysql(
-                version=rds.MysqlEngineVersion.VER_8_0_35
+                version=rds.MysqlEngineVersion.VER_8_4_8
             ),
             credentials=rds.Credentials.from_secret(
                 typing.cast(secretsmanager.ISecret, self.db_secret)
