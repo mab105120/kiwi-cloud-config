@@ -70,7 +70,7 @@ class DatabaseStack(Stack):
             self,
             "DbParameterGroup",
             engine=rds.DatabaseInstanceEngine.mysql(
-                version=rds.MysqlEngineVersion.VER_8_0_35
+                version=rds.MysqlEngineVersion.VER_8_4_8
             ),
             description=f"{env_name} database parameter group",
             parameters={
