@@ -4,7 +4,7 @@
         "dev": {
             "account": "453542520413",
             "region": "us-east-2",
-            "db_name": "kiwi-db-dev",
+            "db_name": "kiwidbdev",
             "github_repo": "mab105120/kiwi-cloud-config"
         }
     }
