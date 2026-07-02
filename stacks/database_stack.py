@@ -154,7 +154,12 @@ class DatabaseStack(Stack):
         # next create the custom resource that CloudFormation will deploy which in turns triggers the lambda code by calling the provider.service_token url.
 
         create_user_resource = CustomResource(
-            self, "CreateDbUserCustomResource", service_token=provider.service_token
+            self,
+            "CreateDbUserCustomResource",
+            service_token=provider.service_token,
+            properties={
+                "DbInstanceId": self.instance.instance_identifier,
+            },
         )
 
         create_user_resource.node.add_dependency(self.instance)
