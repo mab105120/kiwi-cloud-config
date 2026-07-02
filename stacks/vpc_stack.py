@@ -104,9 +104,7 @@ class VpcStack(Stack):
             bastion_role.add_to_policy(
                 iam.PolicyStatement(
                     actions=["ssm:StartSession"],
-                    resources=[
-                        f"arn:aws:ec2:{self.region}:{self.account}:instance/{bastion.instance_id}"
-                    ],
+                    resources=["*"],
                 )
             )
 
