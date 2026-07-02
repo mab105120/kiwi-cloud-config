@@ -1,6 +1,7 @@
 from aws_cdk import (
     Stack,
     aws_ec2 as ec2,
+    aws_iam as iam,
     CfnOutput,
 )
 from constructs import Construct
@@ -56,6 +57,56 @@ class VpcStack(Stack):
             connection=ec2.Port.tcp(3306),
             description="Allow inbound MySQL from Lambda security group",
         )
+
+        self.bastion_security_group = None
+        if env_name != "prod":
+            self.bastion_security_group = ec2.SecurityGroup(
+                self,
+                "BastionSecurityGroup",
+                vpc=self.vpc,
+                security_group_name=f"{env_name}-bastion-sg",
+                description="Attached to the SSM bastion instance for developer DB access",
+                allow_all_outbound=True,
+            )
+
+            self.db_security_group.add_ingress_rule(
+                peer=self.bastion_security_group,
+                connection=ec2.Port.tcp(3306),
+                description="Allow inbound MySQL from bastion security group",
+            )
+
+            bastion_role = iam.Role(
+                self,
+                "BastionRole",
+                assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"),
+                managed_policies=[
+                    iam.ManagedPolicy.from_aws_managed_policy_name(
+                        "AmazonSSMManagedInstanceCore"
+                    )
+                ],
+            )
+
+            bastion = ec2.Instance(
+                self,
+                "BastionInstance",
+                instance_type=ec2.InstanceType.of(
+                    ec2.InstanceClass.T3, ec2.InstanceSize.MICRO
+                ),
+                machine_image=ec2.MachineImage.latest_amazon_linux2023(),
+                vpc=self.vpc,
+                vpc_subnets=ec2.SubnetSelection(
+                    subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS
+                ),
+                security_group=self.bastion_security_group,
+                role=bastion_role,
+            )
+
+            CfnOutput(
+                self,
+                "BastionInstanceId",
+                value=bastion.instance_id,
+                description="SSM bastion instance ID — use as --target in ssm start-session",
+            )
 
         CfnOutput(self, "VpcId", value=self.vpc.vpc_id, description="VPC ID")
         CfnOutput(
